@@ -67,10 +67,26 @@ class TestLoginWithWrongPass(testLib.RestTestCase):
         self.assertDictEqual(expected, respData)
 
     def testLoginWithWrongPass(self):
-        Users.TESTAPI_resetFixture
+        #add user
         self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
+        #attempt to login with just added user, but with a wrong password
         respData = self.makeRequest("/users/login", method="POST", data = { 'username' : 'user2', 'password' : 'wrong'} )
-        self.assertResponse(respData)
+        self.assertResponse(respData, count = None)
 
+class AddTwoUsersWithSameUsername(testLib.RestTestCase):
+    """Test adding two users, should fail because duplicate username"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_USER_EXISTS):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def addTwoUsersWithSameUsername(self):
+        self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
+        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass'} )
+        self.assertResponse(respData, count = None)
  
 
