@@ -24,16 +24,16 @@ class Users < ActiveRecord::Base
 		name = user_params[:username]
 		pass = user_params[:password]
 		# ensure that length of username cannot be 0, and len of both username and pass <= 128
-		if user_params[:username].length ==0  || name.length > 128
-	    	return $ERR_BAD_USERNAME
+		if name.length < 1  || name.length > 128
+	    	return [$ERR_BAD_USERNAME]
 	    elsif pass.length > 128
-	    	return $ERR_BAD_PASSWORD
+	    	return [$ERR_BAD_PASSWORD]
 	    end
 	    
 	    user = Users.find_by_username(user_params[:username])
 	    if user != nil
 	    	 user.errors.add(:username,"This username already exists. Please try again.")
-	    	return $ERR_USER_EXISTS
+	    	return [$ERR_USER_EXISTS]
 
 	    else
 	    	user = Users.new(user_params)

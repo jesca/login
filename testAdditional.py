@@ -105,7 +105,7 @@ class TestAddWithBlankUsername(testLib.RestTestCase):
 
     def testAddWithBlankUsername(self):
         #add user with blank username
-        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : '', 'password' : 'pass'} )
+        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : '', 'password' : ''} )
         self.assertResponse(respData, count = None)
 
 

@@ -15,7 +15,7 @@ class UsersController < ApplicationController
     if code[0] > 0
       render :json => { :errCode => code[0], :count => code[1]}
     else
-      render :json => { :errCode => code}
+      render :json => { :errCode => code[0]}
     end
   end
 
