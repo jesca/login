@@ -6,8 +6,6 @@ import unittest
 import os
 import testLib
 
-
-
         
 class TestAddUser(testLib.RestTestCase):
     """Test adding users"""

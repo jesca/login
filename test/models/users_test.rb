@@ -16,7 +16,7 @@ class UsersTest < ActiveSupport::TestCase
 
    test "2 Sign up with a redundant user" do
   	code = Users.add(username:"testredundancy",password:"")
-  	assert code == $SUCCESS, "Expected to succesffully add new username to databaes, but failed"
+  	assert code[0] == $SUCCESS, "Expected to succesfully add new username to database, but failed and got code #{code}"
   	code_redundant = Users.add(username:"testredundancy",password:"")
   	assert code_redundant == $ERR_USER_EXISTS, "Expected signing up with user with a username already in database 
   	to fail ('user1') , but was able to save successfully"
@@ -39,7 +39,7 @@ class UsersTest < ActiveSupport::TestCase
   		but minds of the top brass behind them"
 
   		code = Users.add(username: exactUsername, password: "")
-  		assert code == $SUCCESS, "Expected successful sign up with username exactly 128 characters, the allowed
+  		assert code[0] == $SUCCESS, "Expected successful sign up with username exactly 128 characters, the allowed
   		maximum, but got the error code #{exactUsername.length}"  
   	end
 
@@ -54,20 +54,46 @@ class UsersTest < ActiveSupport::TestCase
 
   	test "6 Login with incorrect pass" do
   		Users.TESTAPI_resetFixture
+      code = Users.login(username: "user1", password: "pass3")
+      assert code == $ERR_BAD_CREDENTIALS, "Expected code -1, bad credentials -
+      login fail with wrong password, but got code #{code}"
   	end
 
   	test "7 Login with correct username and pass" do
+      Users.TESTAPI_resetFixture
       code = Users.login(username:"user1", password: "pass1")
-      assert code == $SUCCESS, 5
+      assert code[0] == $SUCCESS, "Expected success code 1; logged in with correct
+      password and username, but got code: #{code}"
   	end
 
-  	test "8 Login should increase count" do
+  	test "8 Adding user should set count to 1" do
+      Users.TESTAPI_resetFixture
+      code =Users.add(username:"testCount", password: "pass1")
+      assert code[0] == $SUCCESS, "Expected success code 1; logged in with correct
+      password and username, but got code: #{code}"
+
+      assert code[1] == 1, "Expected count to = 1 when user is added successfully but
+      got count = #{code[1]}"
   	end
 
   	test "9 Add new user and login" do
+      Users.TESTAPI_resetFixture
+      add_code = Users.add(username:"testAddandLogin", password: "")
+      assert add_code[0] == $SUCCESS, "Adding user failed, got code #{add_code[0]}"
+
+      login_code = Users.login(username:"testAddandLogin", password: "")
+      assert login_code[0] == $SUCCESS, "Expected succesful login after succssful sign up, but got code #{login_code}"
   	end
 
   	test "10 Case sensitive sign up" do
+      Users.TESTAPI_resetFixture
+      add_code = Users.add(username:"jessica", password: "")
+      assert add_code[0] == $SUCCESS, "Adding user 'jessica' failed with code #{add_code}"
+      
+      add_sensitive = Users.add(username:"Jessica", password: "")
+      assert add_sensitive[0] == $SUCCESS, "Expecting successful sign up with username 
+      same as one in database, but with a capital letter in the beginning. Usernames should be 
+      case sensitive, but got the error code: #{add_sensitive}"
   	end
 
 

@@ -1,7 +1,5 @@
 class Users < ActiveRecord::Base
 	validates :username, presence: true, length: {maximum: 128}
-	before_save { self.username = username.downcase }
-
 
 	$SUCCESS = 1
 	$ERR_BAD_CREDENTIALS = -1
