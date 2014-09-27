@@ -55,6 +55,22 @@ class TestLoginUser(testLib.RestTestCase):
         respData = self.makeRequest("/users/login", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
         self.assertResponse(respData, count = 2)
 
+class TestLoginWithWrongPass(testLib.RestTestCase):
+    """Test adding users"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testLoginWithWrongPass(self):
+        Users.TESTAPI_resetFixture
+        self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
+        respData = self.makeRequest("/users/login", method="POST", data = { 'username' : 'user2', 'password' : 'wrong'} )
+        self.assertResponse(respData)
 
  
 
