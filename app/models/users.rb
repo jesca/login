@@ -24,7 +24,7 @@ class Users < ActiveRecord::Base
 		name = user_params[:username]
 		pass = user_params[:password]
 		# ensure that length of username cannot be 0, and len of both username and pass <= 128
-		if name.length == 0 || name.length > 128
+		if name.length < 1 || name.length > 128
 	    	return $ERR_BAD_USERNAME
 	    elsif pass.length > 128
 	    	return $ERR_BAD_PASSWORD

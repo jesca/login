@@ -55,6 +55,7 @@ class TestLoginUser(testLib.RestTestCase):
         respData = self.makeRequest("/users/login", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
         self.assertResponse(respData, count = 2)
 
+
 class TestLoginWithWrongPass(testLib.RestTestCase):
     """Test adding users"""
     def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS):
@@ -73,7 +74,8 @@ class TestLoginWithWrongPass(testLib.RestTestCase):
         respData = self.makeRequest("/users/login", method="POST", data = { 'username' : 'user2', 'password' : 'wrong'} )
         self.assertResponse(respData, count = None)
 
-class AddTwoUsersWithSameUsername(testLib.RestTestCase):
+
+class TestAddTwoUsersWithSameUsername(testLib.RestTestCase):
     """Test adding two users, should fail because duplicate username"""
     def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_USER_EXISTS):
         """
@@ -84,9 +86,61 @@ class AddTwoUsersWithSameUsername(testLib.RestTestCase):
             expected['count']  = count
         self.assertDictEqual(expected, respData)
 
-    def addTwoUsersWithSameUsername(self):
+    def testAddTwoUsersWithSameUsername(self):
         self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
-        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass'} )
+        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : ''} )
         self.assertResponse(respData, count = None)
  
+
+class TestAddWithBlankUsername(testLib.RestTestCase):
+    """Test adding users"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_BAD_USERNAME):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testAddWithBlankUsername(self):
+        #add user with blank username
+        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : '', 'password' : 'pass'} )
+        self.assertResponse(respData, count = None)
+
+
+class TestAddUsernameTooLong(testLib.RestTestCase):
+    """Test adding users"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testAddUsernameTooLong(self):
+        #attempt to signup with a long username
+        tempName = "I say we shall always have native crime to fear until the native people of this country have worthy purposes to inspire them and worthy goals to work for. For it is only because they see neither purpose nor goal that they turn to drink and crime and prostitution. Which do we prefer, a law-abiding, industrious and purposeful native people, or a lawless, idle and purposeless people?"
+        respData = self.makeRequest("/users/login", method="POST", data = { 'username' : tempName, 'password' : 'wrong'} )
+        self.assertResponse(respData, count = None)
+
+class TestAddPasswordTooLong(testLib.RestTestCase):
+    """Test adding users"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.ERR_BAD_PASSWORD):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testAddPasswordTooLong(self):
+        #attempt to signup with a long username
+        tempPass = "I say we shall always have native crime to fear until the native people of this country have worthy purposes to inspire them and worthy goals to work for. For it is only because they see neither purpose nor goal that they turn to drink and crime and prostitution. Which do we prefer, a law-abiding, industrious and purposeful native people, or a lawless, idle and purposeless people?"
+        respData = self.makeRequest("/users/add", method="POST", data = { 'username' : "name", 'password' : tempPass} )
+        self.assertResponse(respData, count = None)
+
 
