@@ -12,8 +12,8 @@ class TestUnit(testLib.RestTestCase):
     def testUnit(self):
         respData = self.makeRequest("/TESTAPI/unitTests", method="POST")
         self.assertTrue('output' in respData)
-        print ("Unit tests output:\n"+
-               "\n***** ".join(respData['output'].split("\n")))
+        #print ("Unit tests output:\n"+
+        #       "\n***** ".join(respData['output'].split("\n")))
         self.assertTrue('totalTests' in respData)
         print "***** Reported "+str(respData['totalTests'])+" unit tests. nrFailed="+str(respData['nrFailed'])
         # When we test the actual project, we require at least 10 unit tests
@@ -21,9 +21,7 @@ class TestUnit(testLib.RestTestCase):
         self.assertTrue(respData['totalTests'] >= minimumTests,
                         "at least "+str(minimumTests)+" unit tests. Found only "+str(respData['totalTests'])+". use SAMPLE_APP=1 if this is the sample app")
         self.assertEquals(0, respData['nrFailed'])
-
-
-        
+       
         
 class TestAddUser(testLib.RestTestCase):
     """Test adding users"""
@@ -41,4 +39,22 @@ class TestAddUser(testLib.RestTestCase):
         self.assertResponse(respData, count = 1)
 
     
+class TestLoginUser(testLib.RestTestCase):
+    """Test adding users"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.SUCCESS):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testLogin(self):
+        self.makeRequest("/users/add", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
+        respData = self.makeRequest("/users/login", method="POST", data = { 'username' : 'user2', 'password' : 'pass2'} )
+        self.assertResponse(respData, count = 2)
+
+
  
+

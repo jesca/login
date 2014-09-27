@@ -7,6 +7,19 @@ class Users < ActiveRecord::Base
 	$ERR_BAD_USERNAME = -3
 	$ERR_BAD_PASSWORD = -4
 
+	def self.login(user_params)
+		loginUser = Users.find_by_username_and_password(user_params[:username],user_params[:password])
+	  	if loginUser != nil
+	  		loginUser.count += 1
+	  		loginUser.save
+	  		return [$SUCCESS, loginUser.count]
+	  	else
+	  		#wrong password
+	  		return [$ERR_BAD_CREDENTIALS]
+	  	end
+	  end
+
+
 	def self.add(user_params)
 		name = user_params[:username]
 		pass = user_params[:password]
@@ -17,34 +30,20 @@ class Users < ActiveRecord::Base
 	    	return $ERR_BAD_PASSWORD
 	    end
 	    
-	    @user = Users.find_by_username(user_params[:username])
-	    if @user != nil
-	    	 @user.errors.add(:username,"This username already exists. Please try again.")
+	    user = Users.find_by_username(user_params[:username])
+	    if user != nil
+	    	 user.errors.add(:username,"This username already exists. Please try again.")
 	    	return $ERR_USER_EXISTS
+
 	    else
-	    	@user = Users.new(user_params)
-	    	@user.count = 1
-	    	if @user.save
-	    		return $SUCCESS, @user.count
+	    	user = Users.new(user_params)
+	    	user.count = 1
+	    	if user.save
+	    		return $SUCCESS, user.count
 	    	end
 	    end
 	end
-
-	def self.login(user_params)
-		@user = Users.find_by_username(user_params[:username])
-	  	if @user == nil
-	  		return $ERR_BAD_CREDENTIALS
-	  	end
-	  	if (@user.password) == user_params[:password]
-	  		@user.count += 1
-	  		@user.save
-	  		return $SUCCESS, @user.count
-	  	else
-	  		#wrong password
-	  		return $ERR_BAD_CREDENTIALS
-	  	end
-	  end
-
+	
 	  def self.TESTAPI_resetFixture
 	  	Users.delete_all
 	  	return $SUCCESS
