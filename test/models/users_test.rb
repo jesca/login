@@ -10,15 +10,15 @@ class UsersTest < ActiveSupport::TestCase
 
   test "1 Sign up blank username" do
   	code = Users.add(username:"", password:"")
-  	assert (code == $ERR_BAD_USERNAME), "Expected sign up failure with blank username,
-  	but sign up was successful"
+  	assert (code[0] == $ERR_BAD_USERNAME), "Expected sign up failure with blank username,
+  	but sign up was successful with code: #{code}"
   end
 
    test "2 Sign up with a redundant user" do
   	code = Users.add(username:"testredundancy",password:"")
   	assert code[0] == $SUCCESS, "Expected to succesfully add new username to database, but failed and got code #{code}"
   	code_redundant = Users.add(username:"testredundancy",password:"")
-  	assert code_redundant == $ERR_USER_EXISTS, "Expected signing up with user with a username already in database 
+  	assert code_redundant[0] == $ERR_USER_EXISTS, "Expected signing up with user with a username already in database 
   	to fail ('user1') , but was able to save successfully"
   end
 
@@ -29,7 +29,7 @@ class UsersTest < ActiveSupport::TestCase
   		The programmers were the artisans of the future"
 
   	code = Users.add(username: "testUsernameLen", password: longPassword)
-  	assert code == $ERR_BAD_PASSWORD, "Expected signup failure due to password legnth constraint (Password length >> 128), 
+  	assert code[0] == $ERR_BAD_PASSWORD, "Expected signup failure due to password legnth constraint (Password length >> 128), 
   	 but was able to sign up successfully"
   	end
 
@@ -48,19 +48,20 @@ class UsersTest < ActiveSupport::TestCase
   		bad_pass = "badPass"
   		Users.TESTAPI_resetFixture
   		code = Users.login(username: bad_username, password: bad_pass)
-  		assert code == $ERR_BAD_CREDENTIALS, "Expected unsucessful login with bad username, but
+  		assert code[0] == $ERR_BAD_CREDENTIALS, "Expected unsucessful login with bad username, but
   		sign in successful, and got code #{code}"
   	end
 
   	test "6 Login with incorrect pass" do
   		Users.TESTAPI_resetFixture
       code = Users.login(username: "user1", password: "pass3")
-      assert code == $ERR_BAD_CREDENTIALS, "Expected code -1, bad credentials -
+      assert code[0] == $ERR_BAD_CREDENTIALS, "Expected code -1, bad credentials -
       login fail with wrong password, but got code #{code}"
   	end
 
   	test "7 Login with correct username and pass" do
       Users.TESTAPI_resetFixture
+      Users.add(username:"user1", password: "pass1")
       code = Users.login(username:"user1", password: "pass1")
       assert code[0] == $SUCCESS, "Expected success code 1; logged in with correct
       password and username, but got code: #{code}"

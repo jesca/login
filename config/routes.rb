@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  root to: "users#index"
+  root 'users#show'
+  get '/users', to: 'users#login'
   match '/users/login',  to: 'users#login', via: 'post'
   match '/users/add', to: 'users#add', via: 'post'
   match '/TESTAPI/resetFixture', to: 'users#TESTAPI_resetFixture', via: 'post'

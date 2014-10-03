@@ -5,6 +5,7 @@ class UsersController < ApplicationController
     code = Users.login(user_params)
     if code[0] > 0
       render :json => { :errCode => code[0], :count => code[1]}
+      redirect_to user_params[:user]
     else
       render :json => { :errCode => code[0]}
     end
