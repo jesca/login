@@ -23,6 +23,7 @@ class UserController < ApplicationController
       format.html 
       format.json { render :json => { :errCode => response[0], :count => response[1]}  }
       end
+
     elsif code == -1
       #unsuccessful login
       @user = User.new
@@ -32,6 +33,7 @@ class UserController < ApplicationController
       format.json { render :json => { :errCode => response[0]} }
       end
     end
+
   end
 
 
@@ -45,22 +47,34 @@ class UserController < ApplicationController
       format.html
       format.json { render :json => { :errCode => response[0], :count => response[1]} }
       end
-    elsif code == -2
+    end
+
+    if code == -2
       #already exists
       @user = response[1]
       @user.errors.add(:username,"Invalid username and password combination. Please try again")
+      respond_to do |format|
+      format.html { render 'new' }
+      format.json { render :json => { :errCode => response[0] } }
+      end
     elsif code == -3
        @user = User.new
        @user.errors.add(:username,"The user name should be non-empty and at most 128 characters long. Please try again.")
+       respond_to do |format|
+      format.html { render 'new' }
+      format.json { render :json => { :errCode => response[0] } }
+      end
     elsif code == -4
        @user =  User.new
        @user.errors.add(:username,"The password should be at most 128 characters long. Please try again.")
-    end
-      respond_to do |format|
+       respond_to do |format|
       format.html { render 'new' }
-      format.json { render :json => { :errCode => response[0]} }
+      format.json { render :json => { :errCode => response[0] } }
       end
     end
+      
+    end
+
   
 
   # after clicking submit button on form, either login or add
