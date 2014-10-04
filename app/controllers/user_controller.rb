@@ -13,6 +13,15 @@ class UserController < ApplicationController
     @user = User.new
   end
 
+  def update
+     if params[:login]
+      puts "creds", (@user)
+      self.login
+    else
+      self.add
+    end
+  end
+
   def login 
     response = User.login(user_params)
     #successful login  // correct credentials
@@ -52,7 +61,7 @@ class UserController < ApplicationController
     if code == -2
       #already exists
       @user = response[1]
-      @user.errors.add(:username,"Invalid username and password combination. Please try again")
+      @user.errors.add(:username,"This username already exists. Please try again.")
       respond_to do |format|
       format.html { render 'new' }
       format.json { render :json => { :errCode => response[0] } }

@@ -34,7 +34,6 @@ class User < ActiveRecord::Base
 	   
 
 	    if user != nil
-	    	 user.errors.add(:username,"This username already exists. Please try again.")
 	    	return [$ERR_USER_EXISTS, user]
 
 	    else
