@@ -1,15 +1,14 @@
+<h1>Please enter your credentials below:
+</h1><br>
 <%= form_for(@user) do |f| %>
   <% if @user.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this high_score from being saved:</h2>
-
-      <ul>
       <% @user.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
       </ul>
     </div>
-  <% end %>
+  <% end %><br>
   <div class="field">
     <%= f.label :username %><br>
     <%= f.text_field :username %>
